@@ -1,0 +1,15 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/devboard}
+    username: ${DB_USER:devboard}
+    password: ${DB_PASSWORD:devboard}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+app:
+  jwt-secret: ${JWT_SECRET:development-secret-must-be-at-least-32-characters-long}

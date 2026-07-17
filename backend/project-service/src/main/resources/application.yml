@@ -1,0 +1,16 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: project-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/devboard}
+    username: ${DB_USER:devboard}
+    password: ${DB_PASSWORD:devboard}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+app:
+  auth-url: ${AUTH_URL:http://localhost:8081}
+  task-url: ${TASK_URL:http://localhost:8083}
