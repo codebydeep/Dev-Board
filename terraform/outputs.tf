@@ -13,27 +13,22 @@ output "private_subnet_ids" {
   value       = module.vpc.private_subnet_ids
 }
 
-output "cluster_name" {
-  description = "EKS cluster name."
-  value       = module.eks.cluster_name
+output "instance_id" {
+  description = "ID of the EC2 instance."
+  value       = module.ec2.instance_id
 }
 
-output "cluster_endpoint" {
-  description = "EKS API server endpoint."
-  value       = module.eks.cluster_endpoint
+output "instance_public_ip" {
+  description = "Public IP of the EC2 instance."
+  value       = module.ec2.instance_public_ip
 }
 
-output "cluster_version" {
-  description = "Kubernetes version of the cluster."
-  value       = module.eks.cluster_version
+output "instance_private_ip" {
+  description = "Private IP of the EC2 instance."
+  value       = module.ec2.instance_private_ip
 }
 
-output "oidc_provider_arn" {
-  description = "OIDC provider ARN for IRSA."
-  value       = module.eks.oidc_provider_arn
-}
-
-output "kubeconfig_command" {
-  description = "AWS CLI command to update your local kubeconfig."
-  value       = "aws eks update-kubeconfig --region ${var.aws_region} --name ${module.eks.cluster_name}"
+output "ec2_security_group_id" {
+  description = "Security group ID attached to the EC2 instance."
+  value       = module.ec2.security_group_id
 }

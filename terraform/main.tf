@@ -6,10 +6,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
-    }
   }
 
   backend "s3" {
@@ -31,7 +27,7 @@ provider "aws" {
 
 locals {
   common_tags = merge(var.tags, {
-    Project     = var.cluster_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "terraform"
   })
@@ -40,7 +36,7 @@ locals {
 module "vpc" {
   source = "./modules/vpc"
 
-  cluster_name         = var.cluster_name
+  cluster_name         = var.project_name
   vpc_cidr             = var.vpc_cidr
   availability_zones   = var.availability_zones
   public_subnet_cidrs  = var.public_subnet_cidrs
@@ -48,22 +44,18 @@ module "vpc" {
   tags                 = local.common_tags
 }
 
-module "eks" {
-  source = "./modules/eks"
+module "ec2" {
+  source = "./modules/ec2"
 
-  cluster_name           = var.cluster_name
-  kubernetes_version     = var.kubernetes_version
-  vpc_id                 = module.vpc.vpc_id
-  public_subnet_ids      = module.vpc.public_subnet_ids
-  private_subnet_ids     = module.vpc.private_subnet_ids
-  endpoint_public_access = var.endpoint_public_access
-  cluster_log_types      = var.cluster_log_types
-  node_instance_types    = var.node_instance_types
-  node_disk_size         = var.node_disk_size
-  node_capacity_type     = var.node_capacity_type
-  node_desired_size      = var.node_desired_size
-  node_min_size          = var.node_min_size
-  node_max_size          = var.node_max_size
-  node_labels            = var.node_labels
-  tags                   = local.common_tags
+  name                = var.project_name
+  vpc_id              = module.vpc.vpc_id
+  subnet_id           = module.vpc.public_subnet_ids[0]
+  instance_type       = var.instance_type
+  ami_id              = var.ami_id
+  associate_public_ip = true
+  root_volume_size    = var.root_volume_size
+  public_key          = var.public_key
+  ssh_allowed_cidrs   = var.ssh_allowed_cidrs
+  user_data           = var.user_data
+  tags                = local.common_tags
 }

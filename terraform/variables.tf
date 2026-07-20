@@ -4,10 +4,10 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "cluster_name" {
+variable "project_name" {
   description = "Name used as a prefix for all resource names and tags."
   type        = string
-  default     = "app-cluster"
+  default     = "ms-app"
 }
 
 variable "environment" {
@@ -16,6 +16,8 @@ variable "environment" {
   default     = "dev"
 }
 
+# ── VPC ──────────────────────────────────────────────────────────────────────
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC."
   type        = string
@@ -23,82 +25,62 @@ variable "vpc_cidr" {
 }
 
 variable "availability_zones" {
-  description = "Availability zones to use. Should have at least 2 for HA."
+  description = "Availability zones to use."
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b"]
+  default     = ["us-east-1a"]
 }
 
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets."
   type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+  default     = ["10.0.1.0/24"]
 }
 
 variable "private_subnet_cidrs" {
-  description = "CIDR blocks for private subnets (one per AZ)."
+  description = "CIDR blocks for private subnets."
   type        = list(string)
-  default     = ["10.0.11.0/24", "10.0.12.0/24"]
+  default     = ["10.0.11.0/24"]
 }
 
-variable "kubernetes_version" {
-  description = "Kubernetes version for the EKS cluster."
+# ── EC2 ──────────────────────────────────────────────────────────────────────
+
+variable "instance_type" {
+  description = "EC2 instance type."
   type        = string
-  default     = "1.30"
+  default     = "t3.micro"
 }
 
-variable "endpoint_public_access" {
-  description = "Expose the EKS API server publicly."
-  type        = bool
-  default     = true
+variable "ami_id" {
+  description = "Custom AMI ID. Leave empty to use the latest Amazon Linux 2023."
+  type        = string
+  default     = ""
 }
 
-variable "cluster_log_types" {
-  description = "Control plane log types to send to CloudWatch."
-  type        = list(string)
-  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-}
-
-variable "node_instance_types" {
-  description = "EC2 instance types for worker nodes."
-  type        = list(string)
-  default     = ["t3.medium"]
-}
-
-variable "node_disk_size" {
-  description = "Root EBS volume size (GiB) for worker nodes."
+variable "root_volume_size" {
+  description = "Root EBS volume size in GiB."
   type        = number
   default     = 20
 }
 
-variable "node_capacity_type" {
-  description = "ON_DEMAND or SPOT capacity for worker nodes."
+variable "public_key" {
+  description = "SSH public key material for the key pair. Leave empty to skip."
   type        = string
-  default     = "ON_DEMAND"
+  default     = ""
 }
 
-variable "node_desired_size" {
-  description = "Desired number of worker nodes."
-  type        = number
-  default     = 2
+variable "ssh_allowed_cidrs" {
+  description = "CIDR blocks allowed to SSH into the instance."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
-variable "node_min_size" {
-  description = "Minimum number of worker nodes."
-  type        = number
-  default     = 1
+variable "user_data" {
+  description = "User data script to run on instance launch."
+  type        = string
+  default     = null
 }
 
-variable "node_max_size" {
-  description = "Maximum number of worker nodes."
-  type        = number
-  default     = 4
-}
-
-variable "node_labels" {
-  description = "Kubernetes labels to attach to all worker nodes."
-  type        = map(string)
-  default     = {}
-}
+# ── Shared ───────────────────────────────────────────────────────────────────
 
 variable "tags" {
   description = "Extra tags to merge into all resources."
